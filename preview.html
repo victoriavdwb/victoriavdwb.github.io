@@ -2,7 +2,7 @@
 <!--
   PREVIEW ONLY — double-click to see the look locally.
   The live site is generated from index.md / photography.md via GitHub Pages;
-  there the photo grid is filled automatically from images/photography/.
+  there the roll is filled automatically from images/photography/.
   This file is not needed once deployed — you can delete it.
 -->
 <html lang="en">
@@ -10,82 +10,117 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Photography · Victoria</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
   <style>
     :root { --bg:#efe7d8; --ink:#3a3630; --muted:#8a8072; --link:#7a5c3e; }
     * { box-sizing: border-box; }
-    body { margin:0; background:var(--bg); color:var(--ink);
+    body { margin:0; overflow-x:hidden; background:var(--bg); color:var(--ink);
       font-family:"Cormorant Garamond", Garamond, Georgia, serif; font-size:21px;
       line-height:1.65; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
-    .wrap { max-width:1080px; margin:0 auto; padding:12vh 24px 15vh; }
+    .wrap { max-width:1200px; margin:0 auto; padding:12vh 24px 15vh; }
     h1 { font-weight:500; font-size:2.4rem; line-height:1.2; margin:0 0 0.6em; letter-spacing:0.2px; }
-    p { margin:0 0 1.1em; }
-    .muted { color:var(--muted); }
     a { color:var(--link); text-decoration:none; }
     nav { margin-top:3em; font-size:0.95rem; }
     nav a { border-bottom:1px solid rgba(122,92,62,0.35); }
-    .gallery { display:flex; flex-wrap:wrap; margin:2em 0 0; line-height:0; }
-    .gallery .shot { display:block; overflow:hidden; background:#ddd4c4; }
-    .gallery .shot img { display:block; width:100%; height:100%; object-fit:cover; }
-    .gallery.pre-js .shot { flex:1 1 240px; height:240px; }
+
+    .roll { position:relative; margin:2.5em 0 0; outline:none; }
+    .roll-stage { position:relative; height:min(70vh,620px); perspective:1500px; }
+    .frame { position:absolute; top:50%; left:50%; height:82%; margin:0;
+      transform:translate(-50%,-50%); transform-style:preserve-3d;
+      transition:transform .55s cubic-bezier(.22,.61,.36,1), opacity .55s ease;
+      cursor:pointer; -webkit-user-select:none; user-select:none; }
+    .frame img { height:100%; width:auto; max-width:62vw; display:block;
+      background:#ddd4c4; box-shadow:0 18px 50px rgba(45,40,34,.35); }
+    .roll-nav { position:absolute; top:50%; transform:translateY(-50%); z-index:60;
+      width:54px; height:54px; border:none; border-radius:50%;
+      background:rgba(239,231,216,.6); -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px);
+      color:var(--ink); font-family:inherit; font-size:2.4rem; line-height:1; cursor:pointer;
+      transition:background .2s ease; }
+    .roll-nav:hover { background:rgba(239,231,216,.95); }
+    .roll-nav.prev { left:4px; } .roll-nav.next { right:4px; }
+    @media (max-width:480px){ .roll-stage{height:52vh;} .frame img{max-width:82vw;}
+      .roll-nav{width:44px;height:44px;font-size:2rem;} }
   </style>
 </head>
 <body>
   <main class="wrap">
     <h1>Photography 🌿</h1>
-    <p class="muted">A short intro to your photography goes here — replace this with whatever you like.</p>
-    <div class="gallery pre-js">
-      <a class="shot" href="images/photography/mock-01-landscape.jpg"><img src="images/photography/mock-01-landscape.jpg" alt=""></a>
-      <a class="shot" href="images/photography/mock-02-portrait.jpg"><img src="images/photography/mock-02-portrait.jpg" alt=""></a>
-      <a class="shot" href="images/photography/mock-03-square.jpg"><img src="images/photography/mock-03-square.jpg" alt=""></a>
-      <a class="shot" href="images/photography/mock-04-wide.jpg"><img src="images/photography/mock-04-wide.jpg" alt=""></a>
-      <a class="shot" href="images/photography/mock-05-portrait.jpg"><img src="images/photography/mock-05-portrait.jpg" alt=""></a>
-      <a class="shot" href="images/photography/mock-06-landscape.jpg"><img src="images/photography/mock-06-landscape.jpg" alt=""></a>
+    <!-- NOTE: this list is hardcoded for local preview only. The live site
+         fills the roll automatically from images/photography/. -->
+    <div class="roll" tabindex="0" aria-label="Photo roll">
+      <div class="roll-stage">
+        <figure class="frame"><img src="images/photography/1496E1EE-A9A0-4B68-8532-B68723775871.JPG" alt="" draggable="false"></figure>
+        <figure class="frame"><img src="images/photography/DSC01268.jpg" alt="" draggable="false"></figure>
+        <figure class="frame"><img src="images/photography/DSC03710.JPG" alt="" draggable="false"></figure>
+        <figure class="frame"><img src="images/photography/DSC04395.JPG" alt="" draggable="false"></figure>
+        <figure class="frame"><img src="images/photography/DSC04730.JPG" alt="" draggable="false"></figure>
+        <figure class="frame"><img src="images/photography/DSC05332.jpg" alt="" draggable="false"></figure>
+        <figure class="frame"><img src="images/photography/DSC05619.JPG" alt="" draggable="false"></figure>
+        <figure class="frame"><img src="images/photography/DSC06024.JPG" alt="" draggable="false"></figure>
+        <figure class="frame"><img src="images/photography/DSC06375.JPG" alt="" draggable="false"></figure>
+        <figure class="frame"><img src="images/photography/DSC06733.jpg" alt="" draggable="false"></figure>
+        <figure class="frame"><img src="images/photography/DSC07799.JPG" alt="" draggable="false"></figure>
+        <figure class="frame"><img src="images/photography/DSC07848.jpg" alt="" draggable="false"></figure>
+        <figure class="frame"><img src="images/photography/DSC09354.JPG" alt="" draggable="false"></figure>
+      </div>
+      <button class="roll-nav prev" type="button" aria-label="Previous photo">‹</button>
+      <button class="roll-nav next" type="button" aria-label="Next photo">›</button>
     </div>
     <nav><a href="#">← Home</a></nav>
   </main>
 
   <script>
     (function () {
-      var gallery = document.querySelector('.gallery');
-      if (!gallery) return;
-      var TARGET_ROW_HEIGHT = 260, MAX_LAST_ROW_SCALE = 1.5;
-      function layout() {
-        var shots = Array.prototype.slice.call(gallery.querySelectorAll('.shot'));
-        if (!shots.length) return;
-        gallery.classList.remove('pre-js');
-        var containerWidth = gallery.clientWidth, row = [], rowAspectSum = 0;
-        function flushRow(isLast) {
-          if (!row.length) return;
-          var height = containerWidth / rowAspectSum;
-          if (isLast && height > TARGET_ROW_HEIGHT * MAX_LAST_ROW_SCALE) height = TARGET_ROW_HEIGHT;
-          row.forEach(function (item) {
-            item.el.style.width = (height * item.ar) + 'px';
-            item.el.style.height = height + 'px';
-          });
-          row = []; rowAspectSum = 0;
+      var roll = document.querySelector('.roll');
+      if (!roll) return;
+      var stage = roll.querySelector('.roll-stage');
+      var frames = Array.prototype.slice.call(roll.querySelectorAll('.frame'));
+      var N = frames.length;
+      if (!N) return;
+      var current = 0;
+      var downX = 0, moved = 0, isDown = false;
+      function place() {
+        var step = stage.clientWidth * 0.26;
+        for (var i = 0; i < N; i++) {
+          var o = i - current;
+          if (o > N / 2) o -= N; else if (o < -N / 2) o += N;
+          var a = Math.abs(o), sign = o > 0 ? 1 : (o < 0 ? -1 : 0);
+          var x, s, ry, op, z;
+          if (a === 0)      { x = 0;               s = 1.0;  ry = 0;           op = 1;    z = 40; }
+          else if (a === 1) { x = sign * step;       s = 0.8;  ry = -sign * 26; op = 0.7;  z = 30; }
+          else if (a === 2) { x = sign * step * 1.8; s = 0.62; ry = -sign * 30; op = 0.32; z = 20; }
+          else              { x = sign * step * 2.5; s = 0.5;  ry = -sign * 32; op = 0;    z = 10; }
+          var f = frames[i];
+          f.style.transform = 'translate(-50%,-50%) translateX(' + x + 'px) rotateY(' + ry + 'deg) scale(' + s + ')';
+          f.style.opacity = op; f.style.zIndex = z; f.style.pointerEvents = op > 0 ? 'auto' : 'none';
         }
-        shots.forEach(function (el) {
-          var img = el.querySelector('img');
-          var ar = (img.naturalWidth && img.naturalHeight) ? img.naturalWidth / img.naturalHeight : 1.5;
-          row.push({ el: el, ar: ar }); rowAspectSum += ar;
-          if (containerWidth / rowAspectSum <= TARGET_ROW_HEIGHT) flushRow(false);
-        });
-        flushRow(true);
       }
-      var imgs = Array.prototype.slice.call(gallery.querySelectorAll('img'));
-      var pending = imgs.length;
-      function done() { if (--pending <= 0) layout(); }
-      imgs.forEach(function (img) {
-        if (img.complete && img.naturalWidth) done();
-        else { img.addEventListener('load', done); img.addEventListener('error', done); }
+      function go(dir) { current = (current + dir + N) % N; place(); }
+      roll.querySelector('.next').addEventListener('click', function () { go(1); });
+      roll.querySelector('.prev').addEventListener('click', function () { go(-1); });
+      frames.forEach(function (f, i) {
+        f.addEventListener('click', function () {
+          if (Math.abs(moved) > 8 || i === current) return;
+          current = i; place();
+        });
       });
-      if (!imgs.length) layout();
+      roll.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight') { go(1); e.preventDefault(); }
+        else if (e.key === 'ArrowLeft') { go(-1); e.preventDefault(); }
+      });
+      stage.addEventListener('pointerdown', function (e) { isDown = true; downX = e.clientX; moved = 0; });
+      stage.addEventListener('pointermove', function (e) { if (isDown) moved = e.clientX - downX; });
+      window.addEventListener('pointerup', function () {
+        if (!isDown) return; isDown = false;
+        if (Math.abs(moved) > 40) go(moved < 0 ? 1 : -1);
+      });
       var t;
-      window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(layout, 120); });
+      window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(place, 120); });
+      place();
     })();
   </script>
 </body>

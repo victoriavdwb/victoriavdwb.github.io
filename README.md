@@ -3,25 +3,27 @@
 A minimal, markdown-based personal site for GitHub Pages.
 
 - **`index.md`** — the landing page. Edit the "about" text here.
-- **`photography.md`** — the photography page. Edit the intro text here; the
-  photo grid fills itself automatically (see below).
+- **`photography.md`** — the photography page (the photo roll). It fills itself
+  automatically (see below); no editing needed to add photos.
 - **`images/photography/`** — drop your photos here. **Any image you add to this
-  folder automatically appears in the grid** — no code changes needed. Files are
+  folder automatically appears in the roll** — no code changes needed. Photos are
   shown in filename order, so prefix names like `01-...`, `02-...` to control
-  order. The `mock-*.jpg` files are placeholders — delete them once you add your
-  own.
+  the order.
+- **`images/`** (root) — the site favicon, a LaTeX `\mathcal{V}` rendered to PNG
+  (`favicon.ico` + several sizes). Not part of the photo roll.
 - **`_layouts/default.html`** — the shared styling (beige background, Cormorant
-  Garamond font, 🌿 emoji favicon) and the grid logic. You rarely need to touch this.
+  Garamond font, favicon) and the photo-roll logic. You rarely need to touch this.
 - **`_config.yml`** — site settings.
 - **`preview.html`** — a local-only preview so you can see the look without
-  deploying. Safe to delete.
+  deploying (excluded from the published site). Safe to delete.
 
-## The photo grid
+## The photo roll
 
-Photos are laid out in a borderless, justified grid: each row is filled edge to
-edge and every photo keeps its own aspect ratio (portrait, landscape, and square
-all sit side by side without cropping between rows). It's responsive and
-re-flows on window resize.
+The photography page shows one photo at a time in a looping 3D "coverflow": the
+centre photo is in front, and the next photos on each side recede into the
+background, tilted in 3D. Slide through it by dragging/swiping, using the ‹ ›
+arrows or the ← → keys, or by clicking a side photo to bring it to the centre.
+Every photo keeps its own aspect ratio (no cropping).
 
 ## Publishing to GitHub Pages
 

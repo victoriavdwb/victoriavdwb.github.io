@@ -5,8 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ page.title }}{% if page.title %} · {% endif %}{{ site.title }}</title>
 
-  <!-- Emoji favicon -->
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
+  <!-- Favicon: LaTeX \mathcal{V} -->
+  <link rel="icon" href="{{ '/images/favicon.ico' | relative_url }}" sizes="any">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ '/images/favicon-16.png' | relative_url }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ '/images/favicon-32.png' | relative_url }}">
+  <link rel="icon" type="image/png" sizes="192x192" href="{{ '/images/favicon-192.png' | relative_url }}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ '/images/apple-touch-icon.png' | relative_url }}">
 
   <!-- Google Font: Cormorant Garamond -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,6 +31,7 @@
 
     body {
       margin: 0;
+      overflow-x: hidden;           /* avoid a scrollbar flicker when a photo pops on hover */
       background: var(--bg);
       color: var(--ink);
       font-family: "Cormorant Garamond", Garamond, Georgia, serif;
@@ -41,9 +46,6 @@
       margin: 0 auto;
       padding: 12vh 24px 15vh;
     }
-
-    /* wider layout on the photography page */
-    body.gallery-page .wrap { max-width: 1080px; }
 
     h1 {
       font-weight: 500;
@@ -79,31 +81,71 @@
 
     img { max-width: 100%; height: auto; }
 
-    /* --- borderless justified photo grid --- */
-    .gallery {
-      display: flex;
-      flex-wrap: wrap;
-      margin: 2em 0 0;
-      line-height: 0;              /* kill inline-gap */
+    /* --- photo roll (3D coverflow carousel) --- */
+    body.photos-page .wrap { max-width: 1200px; }
+
+    .roll {
+      position: relative;
+      margin: 2.5em 0 0;
+      outline: none;
     }
-    .gallery .shot {
-      display: block;
-      overflow: hidden;
-      background: #ddd4c4;         /* placeholder tone while loading */
+    .roll-stage {
+      position: relative;
+      height: min(70vh, 620px);
+      perspective: 1500px;         /* depth for the 3D tilt */
     }
-    .gallery .shot img {
-      display: block;
-      width: 100%;
+    .frame {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      height: 82%;
+      margin: 0;
+      transform: translate(-50%, -50%);
+      transform-style: preserve-3d;
+      transition: transform .55s cubic-bezier(.22,.61,.36,1), opacity .55s ease;
+      cursor: pointer;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .frame img {
       height: 100%;
-      object-fit: cover;
+      width: auto;
+      max-width: 62vw;
+      display: block;
+      background: #ddd4c4;
+      box-shadow: 0 18px 50px rgba(45, 40, 34, 0.35);
     }
-    /* graceful fallback before JS lays things out: simple responsive rows */
-    .gallery.pre-js .shot { flex: 1 1 240px; height: 240px; }
+
+    .roll-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 60;
+      width: 54px;
+      height: 54px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(239, 231, 216, 0.6);
+      -webkit-backdrop-filter: blur(3px);
+      backdrop-filter: blur(3px);
+      color: var(--ink);
+      font-family: inherit;
+      font-size: 2.4rem;
+      line-height: 1;
+      cursor: pointer;
+      transition: background .2s ease;
+    }
+    .roll-nav:hover { background: rgba(239, 231, 216, 0.95); }
+    .roll-nav.prev { left: 4px; }
+    .roll-nav.next { right: 4px; }
 
     @media (max-width: 480px) {
       body { font-size: 18px; }
       .wrap { padding: 8vh 20px 10vh; }
       h1 { font-size: 2rem; }
+      .roll-stage { height: 52vh; }
+      .frame img { max-width: 82vw; }
+      .roll-nav { width: 44px; height: 44px; font-size: 2rem; }
     }
   </style>
 </head>
@@ -113,69 +155,74 @@
   </main>
 
   <script>
-    // Justified, borderless photo grid: fills each row to the container width
-    // while preserving every photo's aspect ratio (no cropping between rows).
+    // Photo roll: a looping 3D coverflow. The centre photo is in front; the
+    // next 1–2 on each side recede into the background, tilted in 3D.
     (function () {
-      var gallery = document.querySelector('.gallery');
-      if (!gallery) return;
+      var roll = document.querySelector('.roll');
+      if (!roll) return;
+      var stage = roll.querySelector('.roll-stage');
+      var frames = Array.prototype.slice.call(roll.querySelectorAll('.frame'));
+      var N = frames.length;
+      if (!N) return;
 
-      var TARGET_ROW_HEIGHT = 260; // px, ideal row height before justifying
-      var MAX_LAST_ROW_SCALE = 1.5; // don't blow up a lonely last row too much
+      var current = 0;
 
-      function layout() {
-        var shots = Array.prototype.slice.call(gallery.querySelectorAll('.shot'));
-        if (!shots.length) return;
-        gallery.classList.remove('pre-js');
+      // drag state (declared before handlers that read `moved`)
+      var downX = 0, moved = 0, isDown = false;
 
-        var containerWidth = gallery.clientWidth;
-        var row = [];
-        var rowAspectSum = 0;
-
-        function flushRow(isLast) {
-          if (!row.length) return;
-          var height = containerWidth / rowAspectSum;
-          if (isLast && height > TARGET_ROW_HEIGHT * MAX_LAST_ROW_SCALE) {
-            height = TARGET_ROW_HEIGHT; // keep last row from over-stretching
-          }
-          row.forEach(function (item) {
-            item.el.style.width = (height * item.ar) + 'px';
-            item.el.style.height = height + 'px';
-          });
-          row = [];
-          rowAspectSum = 0;
+      function place() {
+        var step = stage.clientWidth * 0.26;   // horizontal spacing per neighbour
+        for (var i = 0; i < N; i++) {
+          var o = i - current;                 // signed distance, wrapped so the
+          if (o > N / 2) o -= N;               // roll feels endless in both ways
+          else if (o < -N / 2) o += N;
+          var a = Math.abs(o);
+          var sign = o > 0 ? 1 : (o < 0 ? -1 : 0);
+          var x, s, ry, op, z;
+          if (a === 0)      { x = 0;              s = 1.0;  ry = 0;            op = 1;    z = 40; }
+          else if (a === 1) { x = sign * step;     s = 0.8;  ry = -sign * 26;  op = 0.7;  z = 30; }
+          else if (a === 2) { x = sign * step * 1.8; s = 0.62; ry = -sign * 30; op = 0.32; z = 20; }
+          else              { x = sign * step * 2.5; s = 0.5;  ry = -sign * 32; op = 0;    z = 10; }
+          var f = frames[i];
+          f.style.transform = 'translate(-50%,-50%) translateX(' + x + 'px) rotateY(' + ry + 'deg) scale(' + s + ')';
+          f.style.opacity = op;
+          f.style.zIndex = z;
+          f.style.pointerEvents = op > 0 ? 'auto' : 'none';
         }
-
-        shots.forEach(function (el) {
-          var img = el.querySelector('img');
-          var ar = (img.naturalWidth && img.naturalHeight)
-            ? img.naturalWidth / img.naturalHeight
-            : 1.5;
-          row.push({ el: el, ar: ar });
-          rowAspectSum += ar;
-          // once the row is tall enough worth of photos, justify it
-          if (containerWidth / rowAspectSum <= TARGET_ROW_HEIGHT) flushRow(false);
-        });
-        flushRow(true);
       }
 
-      // Lay out once images have their natural sizes; relayout on resize.
-      var imgs = Array.prototype.slice.call(gallery.querySelectorAll('img'));
-      var pending = imgs.length;
-      function done() { if (--pending <= 0) layout(); }
-      imgs.forEach(function (img) {
-        if (img.complete && img.naturalWidth) { done(); }
-        else {
-          img.addEventListener('load', done);
-          img.addEventListener('error', done);
-        }
+      function go(dir) { current = (current + dir + N) % N; place(); }
+
+      roll.querySelector('.next').addEventListener('click', function () { go(1); });
+      roll.querySelector('.prev').addEventListener('click', function () { go(-1); });
+
+      // click a side photo to bring it to the centre (but not if it was a drag)
+      frames.forEach(function (f, i) {
+        f.addEventListener('click', function () {
+          if (Math.abs(moved) > 8 || i === current) return;
+          current = i; place();
+        });
       });
-      if (!imgs.length) layout();
+
+      // keyboard when the roll is focused
+      roll.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight') { go(1); e.preventDefault(); }
+        else if (e.key === 'ArrowLeft') { go(-1); e.preventDefault(); }
+      });
+
+      // drag / swipe
+      stage.addEventListener('pointerdown', function (e) { isDown = true; downX = e.clientX; moved = 0; });
+      stage.addEventListener('pointermove', function (e) { if (isDown) moved = e.clientX - downX; });
+      window.addEventListener('pointerup', function () {
+        if (!isDown) return;
+        isDown = false;
+        if (Math.abs(moved) > 40) go(moved < 0 ? 1 : -1);
+      });
 
       var t;
-      window.addEventListener('resize', function () {
-        clearTimeout(t);
-        t = setTimeout(layout, 120);
-      });
+      window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(place, 120); });
+
+      place();
     })();
   </script>
 </body>

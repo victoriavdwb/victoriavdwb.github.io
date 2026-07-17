@@ -3,12 +3,10 @@ layout: default
 title:
 ---
 
-# Hi, I'm Victoria 👋
+Hi, I'm Victoria :) 
 
-Write a little about yourself here. This is just placeholder text you can
-replace at any time — tell people who you are, what you do, and what you care
-about. Keep it as short or as long as you like.
+I'm in my final year of medical school (graduating late 2026) with a growing interest in the intersection of clinical medicine and technology. 
+For my doctoral thesis, I'm using Python to study how hybrid closed-loop insulin delivery systems affect treatment outcomes and quality of life for people with Type 1 diabetes. 
+I'm also drawn to genetics and women's health, and I'd like to bring a clinical perspective to both areas.
 
-<nav>
-  <a href="{{ '/photography/' | relative_url }}">Photography →</a>
-</nav>
+Off-screen, I find balance through nature, sports, and photography. You can find some of my shots <a href="{{ '/photography/' | relative_url }}">here</a>.
