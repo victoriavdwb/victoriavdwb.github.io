@@ -5,14 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ page.title }}{% if page.title %} · {% endif %}{{ site.title }}</title>
 
-  <!-- Favicon: LaTeX \mathcal{V} -->
   <link rel="icon" href="{{ '/images/favicon.ico' | relative_url }}" sizes="any">
   <link rel="icon" type="image/png" sizes="16x16" href="{{ '/images/favicon-16.png' | relative_url }}">
   <link rel="icon" type="image/png" sizes="32x32" href="{{ '/images/favicon-32.png' | relative_url }}">
   <link rel="icon" type="image/png" sizes="192x192" href="{{ '/images/favicon-192.png' | relative_url }}">
   <link rel="apple-touch-icon" sizes="180x180" href="{{ '/images/apple-touch-icon.png' | relative_url }}">
 
-  <!-- Google Font: Cormorant Garamond -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
@@ -31,7 +29,7 @@
 
     body {
       margin: 0;
-      overflow-x: hidden;           /* avoid a scrollbar flicker when a photo pops on hover */
+      overflow-x: hidden;
       background: var(--bg);
       color: var(--ink);
       font-family: "Cormorant Garamond", Garamond, Georgia, serif;
@@ -81,7 +79,6 @@
 
     img { max-width: 100%; height: auto; }
 
-    /* --- photo roll (3D coverflow carousel) --- */
     body.photos-page .wrap { max-width: 1200px; }
 
     .roll {
@@ -92,7 +89,7 @@
     .roll-stage {
       position: relative;
       height: min(70vh, 620px);
-      perspective: 1500px;         /* depth for the 3D tilt */
+      perspective: 1500px;
     }
     .frame {
       position: absolute;
@@ -155,8 +152,6 @@
   </main>
 
   <script>
-    // Photo roll: a looping 3D coverflow. The centre photo is in front; the
-    // next 1–2 on each side recede into the background, tilted in 3D.
     (function () {
       var roll = document.querySelector('.roll');
       if (!roll) return;
@@ -166,21 +161,19 @@
       if (!N) return;
 
       var current = 0;
-
-      // drag state (declared before handlers that read `moved`)
       var downX = 0, moved = 0, isDown = false;
 
       function place() {
-        var step = stage.clientWidth * 0.26;   // horizontal spacing per neighbour
+        var step = stage.clientWidth * 0.26;
         for (var i = 0; i < N; i++) {
-          var o = i - current;                 // signed distance, wrapped so the
-          if (o > N / 2) o -= N;               // roll feels endless in both ways
+          var o = i - current;
+          if (o > N / 2) o -= N;
           else if (o < -N / 2) o += N;
           var a = Math.abs(o);
           var sign = o > 0 ? 1 : (o < 0 ? -1 : 0);
           var x, s, ry, op, z;
-          if (a === 0)      { x = 0;              s = 1.0;  ry = 0;            op = 1;    z = 40; }
-          else if (a === 1) { x = sign * step;     s = 0.8;  ry = -sign * 26;  op = 0.7;  z = 30; }
+          if (a === 0)      { x = 0;               s = 1.0;  ry = 0;           op = 1;    z = 40; }
+          else if (a === 1) { x = sign * step;       s = 0.8;  ry = -sign * 26; op = 0.7;  z = 30; }
           else if (a === 2) { x = sign * step * 1.8; s = 0.62; ry = -sign * 30; op = 0.32; z = 20; }
           else              { x = sign * step * 2.5; s = 0.5;  ry = -sign * 32; op = 0;    z = 10; }
           var f = frames[i];
@@ -196,7 +189,6 @@
       roll.querySelector('.next').addEventListener('click', function () { go(1); });
       roll.querySelector('.prev').addEventListener('click', function () { go(-1); });
 
-      // click a side photo to bring it to the centre (but not if it was a drag)
       frames.forEach(function (f, i) {
         f.addEventListener('click', function () {
           if (Math.abs(moved) > 8 || i === current) return;
@@ -204,13 +196,11 @@
         });
       });
 
-      // keyboard when the roll is focused
       roll.addEventListener('keydown', function (e) {
         if (e.key === 'ArrowRight') { go(1); e.preventDefault(); }
         else if (e.key === 'ArrowLeft') { go(-1); e.preventDefault(); }
       });
 
-      // drag / swipe
       stage.addEventListener('pointerdown', function (e) { isDown = true; downX = e.clientX; moved = 0; });
       stage.addEventListener('pointermove', function (e) { if (isDown) moved = e.clientX - downX; });
       window.addEventListener('pointerup', function () {
