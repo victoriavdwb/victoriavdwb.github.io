@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ page.title }}{% if page.title %} · {% endif %}{{ site.title }}</title>
+
+  <!-- Emoji favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
+
+  <!-- Google Font: Cormorant Garamond -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #efe7d8;      /* beige */
+      --ink: #3a3630;     /* warm dark */
+      --muted: #8a8072;   /* soft gray-brown */
+      --link: #7a5c3e;    /* muted brown */
+    }
+
+    * { box-sizing: border-box; }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Cormorant Garamond", Garamond, Georgia, serif;
+      font-size: 21px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    .wrap {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 12vh 24px 15vh;
+    }
+
+    /* wider layout on the photography page */
+    body.gallery-page .wrap { max-width: 1080px; }
+
+    h1 {
+      font-weight: 500;
+      font-size: 2.4rem;
+      line-height: 1.2;
+      margin: 0 0 0.6em;
+      letter-spacing: 0.2px;
+    }
+
+    h2 {
+      font-weight: 500;
+      font-size: 1.5rem;
+      margin: 2em 0 0.5em;
+    }
+
+    p { margin: 0 0 1.1em; }
+
+    a {
+      color: var(--link);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(122, 92, 62, 0.35);
+      transition: border-color 0.2s ease;
+    }
+    a:hover { border-bottom-color: var(--link); }
+
+    .muted { color: var(--muted); }
+
+    nav {
+      margin-top: 3em;
+      font-size: 0.95rem;
+    }
+    nav a { margin-right: 1.2em; }
+
+    img { max-width: 100%; height: auto; }
+
+    /* --- borderless justified photo grid --- */
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      margin: 2em 0 0;
+      line-height: 0;              /* kill inline-gap */
+    }
+    .gallery .shot {
+      display: block;
+      overflow: hidden;
+      background: #ddd4c4;         /* placeholder tone while loading */
+    }
+    .gallery .shot img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    /* graceful fallback before JS lays things out: simple responsive rows */
+    .gallery.pre-js .shot { flex: 1 1 240px; height: 240px; }
+
+    @media (max-width: 480px) {
+      body { font-size: 18px; }
+      .wrap { padding: 8vh 20px 10vh; }
+      h1 { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body class="{{ page.body_class }}">
+  <main class="wrap">
+    {{ content }}
+  </main>
+
+  <script>
+    // Justified, borderless photo grid: fills each row to the container width
+    // while preserving every photo's aspect ratio (no cropping between rows).
+    (function () {
+      var gallery = document.querySelector('.gallery');
+      if (!gallery) return;
+
+      var TARGET_ROW_HEIGHT = 260; // px, ideal row height before justifying
+      var MAX_LAST_ROW_SCALE = 1.5; // don't blow up a lonely last row too much
+
+      function layout() {
+        var shots = Array.prototype.slice.call(gallery.querySelectorAll('.shot'));
+        if (!shots.length) return;
+        gallery.classList.remove('pre-js');
+
+        var containerWidth = gallery.clientWidth;
+        var row = [];
+        var rowAspectSum = 0;
+
+        function flushRow(isLast) {
+          if (!row.length) return;
+          var height = containerWidth / rowAspectSum;
+          if (isLast && height > TARGET_ROW_HEIGHT * MAX_LAST_ROW_SCALE) {
+            height = TARGET_ROW_HEIGHT; // keep last row from over-stretching
+          }
+          row.forEach(function (item) {
+            item.el.style.width = (height * item.ar) + 'px';
+            item.el.style.height = height + 'px';
+          });
+          row = [];
+          rowAspectSum = 0;
+        }
+
+        shots.forEach(function (el) {
+          var img = el.querySelector('img');
+          var ar = (img.naturalWidth && img.naturalHeight)
+            ? img.naturalWidth / img.naturalHeight
+            : 1.5;
+          row.push({ el: el, ar: ar });
+          rowAspectSum += ar;
+          // once the row is tall enough worth of photos, justify it
+          if (containerWidth / rowAspectSum <= TARGET_ROW_HEIGHT) flushRow(false);
+        });
+        flushRow(true);
+      }
+
+      // Lay out once images have their natural sizes; relayout on resize.
+      var imgs = Array.prototype.slice.call(gallery.querySelectorAll('img'));
+      var pending = imgs.length;
+      function done() { if (--pending <= 0) layout(); }
+      imgs.forEach(function (img) {
+        if (img.complete && img.naturalWidth) { done(); }
+        else {
+          img.addEventListener('load', done);
+          img.addEventListener('error', done);
+        }
+      });
+      if (!imgs.length) layout();
+
+      var t;
+      window.addEventListener('resize', function () {
+        clearTimeout(t);
+        t = setTimeout(layout, 120);
+      });
+    })();
+  </script>
+</body>
+</html>

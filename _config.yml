@@ -1,0 +1,10 @@
+title: Victoria
+description: Personal website
+
+# Build settings
+markdown: kramdown
+
+# Exclude from processing (kept in the repo, but not published to the site)
+exclude:
+  - README.md
+  - preview.html

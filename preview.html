@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<!--
+  PREVIEW ONLY — double-click to see the look locally.
+  The live site is generated from index.md / photography.md via GitHub Pages;
+  there the photo grid is filled automatically from images/photography/.
+  This file is not needed once deployed — you can delete it.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Photography · Victoria</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#efe7d8; --ink:#3a3630; --muted:#8a8072; --link:#7a5c3e; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink);
+      font-family:"Cormorant Garamond", Garamond, Georgia, serif; font-size:21px;
+      line-height:1.65; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
+    .wrap { max-width:1080px; margin:0 auto; padding:12vh 24px 15vh; }
+    h1 { font-weight:500; font-size:2.4rem; line-height:1.2; margin:0 0 0.6em; letter-spacing:0.2px; }
+    p { margin:0 0 1.1em; }
+    .muted { color:var(--muted); }
+    a { color:var(--link); text-decoration:none; }
+    nav { margin-top:3em; font-size:0.95rem; }
+    nav a { border-bottom:1px solid rgba(122,92,62,0.35); }
+    .gallery { display:flex; flex-wrap:wrap; margin:2em 0 0; line-height:0; }
+    .gallery .shot { display:block; overflow:hidden; background:#ddd4c4; }
+    .gallery .shot img { display:block; width:100%; height:100%; object-fit:cover; }
+    .gallery.pre-js .shot { flex:1 1 240px; height:240px; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1>Photography 🌿</h1>
+    <p class="muted">A short intro to your photography goes here — replace this with whatever you like.</p>
+    <div class="gallery pre-js">
+      <a class="shot" href="images/photography/mock-01-landscape.jpg"><img src="images/photography/mock-01-landscape.jpg" alt=""></a>
+      <a class="shot" href="images/photography/mock-02-portrait.jpg"><img src="images/photography/mock-02-portrait.jpg" alt=""></a>
+      <a class="shot" href="images/photography/mock-03-square.jpg"><img src="images/photography/mock-03-square.jpg" alt=""></a>
+      <a class="shot" href="images/photography/mock-04-wide.jpg"><img src="images/photography/mock-04-wide.jpg" alt=""></a>
+      <a class="shot" href="images/photography/mock-05-portrait.jpg"><img src="images/photography/mock-05-portrait.jpg" alt=""></a>
+      <a class="shot" href="images/photography/mock-06-landscape.jpg"><img src="images/photography/mock-06-landscape.jpg" alt=""></a>
+    </div>
+    <nav><a href="#">← Home</a></nav>
+  </main>
+
+  <script>
+    (function () {
+      var gallery = document.querySelector('.gallery');
+      if (!gallery) return;
+      var TARGET_ROW_HEIGHT = 260, MAX_LAST_ROW_SCALE = 1.5;
+      function layout() {
+        var shots = Array.prototype.slice.call(gallery.querySelectorAll('.shot'));
+        if (!shots.length) return;
+        gallery.classList.remove('pre-js');
+        var containerWidth = gallery.clientWidth, row = [], rowAspectSum = 0;
+        function flushRow(isLast) {
+          if (!row.length) return;
+          var height = containerWidth / rowAspectSum;
+          if (isLast && height > TARGET_ROW_HEIGHT * MAX_LAST_ROW_SCALE) height = TARGET_ROW_HEIGHT;
+          row.forEach(function (item) {
+            item.el.style.width = (height * item.ar) + 'px';
+            item.el.style.height = height + 'px';
+          });
+          row = []; rowAspectSum = 0;
+        }
+        shots.forEach(function (el) {
+          var img = el.querySelector('img');
+          var ar = (img.naturalWidth && img.naturalHeight) ? img.naturalWidth / img.naturalHeight : 1.5;
+          row.push({ el: el, ar: ar }); rowAspectSum += ar;
+          if (containerWidth / rowAspectSum <= TARGET_ROW_HEIGHT) flushRow(false);
+        });
+        flushRow(true);
+      }
+      var imgs = Array.prototype.slice.call(gallery.querySelectorAll('img'));
+      var pending = imgs.length;
+      function done() { if (--pending <= 0) layout(); }
+      imgs.forEach(function (img) {
+        if (img.complete && img.naturalWidth) done();
+        else { img.addEventListener('load', done); img.addEventListener('error', done); }
+      });
+      if (!imgs.length) layout();
+      var t;
+      window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(layout, 120); });
+    })();
+  </script>
+</body>
+</html>
