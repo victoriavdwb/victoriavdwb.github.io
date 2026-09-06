@@ -3,5 +3,10 @@ description: Personal website
 
 markdown: kramdown
 
+include:
+  - _next
+
 exclude:
   - README.md
+  - Medi Projekt
+  - preview.html

@@ -2,3 +2,6 @@
 _site/
 .jekyll-cache/
 preview.html
+Medi Projekt/node_modules/
+Medi Projekt/.next/
+Medi Projekt/out/

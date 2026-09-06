@@ -1,0 +1,2 @@
+:HL["/preeclampsia/_next/static/chunks/0whk8uy0e8nlb.css","style"]
+0:{"tree":{"name":"","param":null,"prefetchHints":4176,"slots":{"children":{"name":"locale","param":{"type":"d","key":"en","siblings":[]},"prefetchHints":4144,"slots":{"children":{"name":"__PAGE__","param":null,"prefetchHints":4224,"slots":null}}}}},"staleTime":300,"buildId":"SXfpZ5z_bIZR5ZGoJyTxk"}
